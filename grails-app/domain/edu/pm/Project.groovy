@@ -11,7 +11,7 @@ class Project {
 	ProjectPhase currentPhase
 	int priority
 
-	static constraints = {
+	static constraints = { 
 		name nullable: false, unique: true
 		code nullable: false, unique: true
 		techLeadName nullable: false
