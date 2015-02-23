@@ -1,18 +1,18 @@
 package edu.pm
 
-
-
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
 @Transactional(readOnly = true)
 class ProjectController {
-	
+
+   def projectService
+
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)		
-        respond Project.list(params), model:[projectInstanceCount: Project.count()]
+        respond projectService.listOrderByPriority(params), model:[projectInstanceCount: projectService.count()]
     }
 
     def show(Project projectInstance) {
@@ -35,11 +35,12 @@ class ProjectController {
             return
         }
 
-        projectInstance.save flush:true
+        projectService.save(projectInstance)
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.id])
+                flash.message = message(code: 'default.cre' +
+                        'ated.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.id])
                 redirect projectInstance
             }
             '*' { respond projectInstance, [status: CREATED] }
@@ -62,7 +63,7 @@ class ProjectController {
             return
         }
 
-        projectInstance.save flush:true
+        projectService.save(projectInstance)
 
         request.withFormat {
             form multipartForm {
@@ -81,7 +82,7 @@ class ProjectController {
             return
         }
 
-        projectInstance.delete flush:true
+        projectService.delete(projectInstance)
 
         request.withFormat {
             form multipartForm {
